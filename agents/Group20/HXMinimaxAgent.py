@@ -46,5 +46,8 @@ class HXMinimaxAgent(AgentBase):
 
             alpha = max(alpha, score)
 
+            if beta <= alpha:
+                break
+
         return best_move
 
