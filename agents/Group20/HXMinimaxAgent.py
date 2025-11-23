@@ -50,4 +50,16 @@ class HXMinimaxAgent(AgentBase):
                 break
 
         return best_move
+    
+    def evaluate_swap_position(self, board: Board) -> float:
+        """Evaluate the position after a potential swap"""
+        # My heuristic: swap if opponent's first move seems strong
+        # Give a score based on opponent's position to see whether its an advantageous pos
+        opp_score = 0
+        for i in range(board.size):
+            for j in range(board.size):
+                if board.tiles[i][j].colour == self.opp_colour():
+                    # Reward center control for opponent
+                    opp_score += 5 - abs(i - board.size/2) - abs(j - board.size/2)
+        return opp_score  
 
