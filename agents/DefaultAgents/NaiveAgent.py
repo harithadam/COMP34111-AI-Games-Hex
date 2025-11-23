@@ -45,5 +45,14 @@ class NaiveAgent(AgentBase):
         if turn == 2:
             return Move(-1, -1)
         else:
-            x, y = choice(self._choices)
-            return Move(x, y)
+            legal_moves = self.get_legal_moves(board)
+            return choice(legal_moves)
+        
+    # Hi dear harith naf, i change such that naive agent cannot make illegal move for better testing purposes
+    def get_legal_moves(self, board: Board):
+        legal_moves = []
+        for i in range(board.size):
+            for j in range(board.size):
+                if board.tiles[i][j].colour is None:
+                    legal_moves.append(Move(i, j))
+        return legal_moves
