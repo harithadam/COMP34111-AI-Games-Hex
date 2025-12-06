@@ -18,7 +18,7 @@ def run_training_episode(ep: int, board_size: int = 11):
         max_depth=3,
         beam_width=10,
         time_limit_seconds=1.5,
-        training=False,
+        training=True,
         learning_rate=0.01,
     )
     opp_agent = RLAgent(
@@ -26,7 +26,7 @@ def run_training_episode(ep: int, board_size: int = 11):
         max_depth=3,
         beam_width=10,
         time_limit_seconds=1.5,
-        training=False,
+        training=True,
         learning_rate=0.01,
     )
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     rl_wins = 0
     opp_wins = 0
 
-    EPISODES = 15  # increase to 50+ if it runs fast enough
+    EPISODES = 1000  # increase to 50+ if it runs fast enough
 
     last_weights = None
     for ep in range(1, EPISODES + 1):

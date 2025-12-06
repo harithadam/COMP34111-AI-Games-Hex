@@ -35,7 +35,7 @@ class MinimaxBeamAgent(AgentBase):
         max_depth: int = 3,
         beam_width: int = 10,
         time_limit_seconds: float = 1.5,
-        w_conn: float = 8.0,
+        w_conn: float = 6.0,
         w_mat: float = 1.0,
         w_struct: float = 3.0,
     ):

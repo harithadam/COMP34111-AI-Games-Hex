@@ -39,7 +39,9 @@ class MinimaxBeamAgentRL(AgentBase):
         beam_width: int = 10,
         time_limit_seconds: float = 1.5,
         training: bool = False,
-        learning_rate: float = 0.01
+        learning_rate: float = 0.01,
+        delta_clip : float = 3.0,
+        epsilon: float = 0.05,
     ):
         """
         Initialise the MinimaxBeamAgent.
@@ -69,17 +71,26 @@ class MinimaxBeamAgentRL(AgentBase):
         # RL-related attributes
         self._training = training
         self._lr = learning_rate
+        self._delta_clip = delta_clip
+        self._epsilon = epsilon
 
         # Initial heuristic weights
         self._w_conn_base = 8.0 # connection-distance weight
         self._w_mat_base = 1.0 # material (stone count) weight
         self._w_struct_base = 3.0 # connectivity / bridges weight
 
-        # Learned deltas around the base weights
-        # Effective weights will be base + delta, with delta clamped
+        # Learned deltas
         self._delta_conn = 0.0
         self._delta_mat = 0.0
-        self._delta_struct = 0.0 
+        self._delta_struct = 0.0
+
+        # Learned deltas around the base weights
+        # Effective weights will be base + delta, with delta clamped
+        clip = self._delta_clip
+        self._delta_conn   = max(min(self._delta_conn,   clip), -clip)
+        self._delta_mat    = max(min(self._delta_mat,    clip), -clip)
+        self._delta_struct = max(min(self._delta_struct, clip), -clip)
+
 
         # List storing (conn_score, material_score, connectivity_score)
         self._episode_states : list[tuple[float, float, float]] = []
@@ -134,11 +145,68 @@ class MinimaxBeamAgentRL(AgentBase):
         # Clear episode memory after update
         self._episode_states.clear()
 
+
     def get_weights(self) -> tuple[float, float, float]:
         """
         Return the current heuristic weights (for logging/debugging).
         """
         return (self._w_conn, self._w_mat, self._w_struct)
+    
+
+    def set_base_weights(self, w_conn: float, w_mat: float, w_struct: float, reset_deltas: bool = True) -> None:
+        """
+        Manually override the base heuristic weights.
+
+        This is useful for:
+            - Weight tuning experiments (e.g., compare (8,1,3) vs (6,1,3))
+            - Initialising self-play runs from specific weight sets
+            - Ablation studies
+
+        Parameters
+        ----------
+        w_conn : float
+            Base weight for connection-distance heuristic.
+        w_mat : float
+            Base weight for material (stone difference).
+        w_struct : float
+            Base weight for structural connectivity / bridges.
+        reset_deltas : bool
+            If True, the learned deltas (RL adjustments) are reset to zero.
+            If False, deltas are kept, meaning effective weights = new base + old deltas.
+
+        Notes
+        -----
+        Effective weights after calling this are:
+
+            w_conn_eff   = w_conn   + delta_conn
+            w_mat_eff    = w_mat    + delta_mat
+            w_struct_eff = w_struct + delta_struct
+        """
+
+        # Update base weights
+        self._w_conn_base = float(w_conn)
+        self._w_mat_base = float(w_mat)
+        self._w_struct_base = float(w_struct)
+
+        if reset_deltas:
+            self._delta_conn = 0.0
+            self._delta_mat = 0.0
+            self._delta_struct = 0.0
+
+    
+    
+    def copy_deltas_from(self, other: "MinimaxBeamAgentRL") -> None:
+        """
+        Copy the learned deltas from another MinimaxBeamAgentRL instance.
+        This lets us keep two colour-specific agents in sync so they share
+        one evolving policy.
+
+        Only copies deltas, not base weights.
+        """
+        self._delta_conn   = other._delta_conn
+        self._delta_mat    = other._delta_mat
+        self._delta_struct = other._delta_struct
+
     
     def get_effective_weights(self) -> tuple[float, float, float]:
         """
@@ -352,6 +420,20 @@ class MinimaxBeamAgentRL(AgentBase):
 
         # Heuristic move ordering for our colour.
         ordered_moves = self._order_moves(board, legal_moves, self.colour)
+
+        # --- ε-greedy exploration at root (training only) ---
+        # With probability epsilon, pick a move among the top-k candidates
+        # without doing a full minimax search, to diversify states visited.
+        if self._training and self._epsilon > 0.0 and ordered_moves:
+            import random
+            if random.random() < self._epsilon:
+                # Explore among top-k moves (k = beam_width or full list if smaller)
+                k = len(ordered_moves)
+                exploratory_move = random.choice(ordered_moves[:k])
+                child = self._apply_move(board, exploratory_move, self.colour)
+                val = self._evaluate(child)
+                return val, exploratory_move
+            
 
         # Beam search: restrict to top `beam_width` moves if applicable.
         if self._beam_width > 0 and len(ordered_moves) > self._beam_width:

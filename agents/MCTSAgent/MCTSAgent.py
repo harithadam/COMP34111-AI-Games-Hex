@@ -19,6 +19,10 @@ class MCTSAgent(AgentBase):
             bufsize=1
         )
 
+    def __deepcopy__(self, memo):
+        # Do NOT copy the subprocess — return self as-is
+        return self
+
     def make_move(self, turn: int, board: Board, opp_move: Move | None) -> Move:
         """The game engine will call this method to request a move from the agent.
         If the agent is to make the first move, opp_move will be None.

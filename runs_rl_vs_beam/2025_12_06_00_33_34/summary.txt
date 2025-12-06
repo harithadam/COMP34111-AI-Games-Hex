@@ -1,0 +1,5 @@
+RL vs MinimaxBeam training run started at 2025_12_06_00_33_34
+Base weights: (8.0, 1.0, 3.0)
+Depth=3, Beam=10, T=1.5s, LR=0.02, delta_clip=3.0, eps=0.05
+Episodes: 1000
+

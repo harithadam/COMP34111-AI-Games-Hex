@@ -38,13 +38,22 @@ def play_one_game(w_conn, w_mat, w_struct, play_as_red):
 def run_experiments():
 
     # Weight search grid
-    W_CONN   = [6, 8, 10]
-    W_MAT    = [0.5, 1, 2]
-    W_STRUCT = [2, 3, 4]
+    # W_CONN   = [6, 8, 10]
+    # W_MAT    = [0.5, 1, 2]
+    # W_STRUCT = [2, 3, 4]
 
-    candidates = list(product(W_CONN, W_MAT, W_STRUCT))
+    # candidates = list(product(W_CONN, W_MAT, W_STRUCT))
 
-    games_per_setting = 10  # 5 as red, 5 as blue
+    candidates = [
+    (6.0, 1.0, 3.0),
+    (6.0, 1.0, 4.0),
+    (8.0, 1.0, 3.0),
+    (8.0, 1.0, 4.0),
+    (10.0, 0.5, 4.0),
+    ]
+
+
+    games_per_setting = 40  # 5 as red, 5 as blue
 
     results = []
 

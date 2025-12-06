@@ -1,0 +1,8 @@
+Self-play MinimaxBeamAgentRL training run started at 2025_12_05_23_47_54
+Base weights: (8.0, 1.0, 3.0)
+Max depth: 3, Beam width: 10, Time limit: 1.5s, LR: 0.01
+Episodes: 1000
+
+[SUMMARY] After 10 episodes: RED wins=0, BLUE wins=10, RED winrate=0.000, BLUE winrate=1.000, current weights=(8.018311047963975, 1.0074741979530168, 3.026878062148241)
+[SUMMARY] After 20 episodes: RED wins=0, BLUE wins=20, RED winrate=0.000, BLUE winrate=1.000, current weights=(8.018311047963975, 1.0074741979530168, 3.026878062148241)
+[SUMMARY] After 30 episodes: RED wins=0, BLUE wins=30, RED winrate=0.000, BLUE winrate=1.000, current weights=(8.018311047963975, 1.0074741979530168, 3.026878062148241)
