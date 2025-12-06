@@ -1,19 +1,20 @@
-Game 001: MinimaxBeam wins
-Game 002: MinimaxBeamRL wins
-Game 003: MinimaxBeam wins
-Game 004: MinimaxBeamRL wins
-Game 005: MinimaxBeam wins
-Game 006: MinimaxBeamRL wins
-Game 007: MinimaxBeam wins
-Game 008: MinimaxBeamRL wins
-Game 009: MinimaxBeam wins
-Game 010: MinimaxBeamRL wins
+MinimaxBeam1 (8, 1, 3) vs MinimaxBeam2 (6, 1, 3)
+
+Game 001: MinimaxBeam1 wins
+Game 002: MinimaxBeam2 wins
+Game 003: MinimaxBeam1 wins
+Game 004: MinimaxBeam2 wins
+Game 005: MinimaxBeam1 wins
+Game 006: MinimaxBeam2 wins
+Game 007: MinimaxBeam1 wins
+Game 008: MinimaxBeam2 wins
+Game 009: MinimaxBeam1 wins
+Game 010: MinimaxBeam2 wins
 
 ====== BATCH EXPERIMENT SUMMARY ======
 Total games:         10
-MinimaxBeamRL wins:  5
-MinimaxBeam wins:    5
+MinimaxBeam1 wins:  5
+MinimaxBeam2 wins:    5
 Unknown results:     0
 MinimaxBeamRL win rate: 0.500
 MinimaxBeam win rate:   0.500
-Logs stored in: logs_minimax_vs_rl_2025_12_05_23_13_10
