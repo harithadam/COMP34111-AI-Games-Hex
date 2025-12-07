@@ -32,10 +32,11 @@ class MinimaxBeamAgent(AgentBase):
     def __init__(
         self,
         colour: Colour,
-        max_depth: int = 3,
+        max_depth: int = 5,
         beam_width: int = 10,
-        time_limit_seconds: float = 1.5,
-        w_conn: float = 6.0,
+        total_time_limit: int = 300.0,
+        # time_limit_seconds: float = 1.5,
+        w_conn: float = 8.0,
         w_mat: float = 1.0,
         w_struct: float = 3.0,
     ):
@@ -57,7 +58,8 @@ class MinimaxBeamAgent(AgentBase):
         super().__init__(colour)
         self._max_depth = max_depth
         self._beam_width = beam_width      # <= 0 => approximate full minimax
-        self._time_limit = time_limit_seconds
+        # self._time_limit = time_limit_seconds
+        self._total_time_remaining = total_time_limit
         self._start_time = 0.0
 
         # Store heuristic weights
@@ -93,6 +95,21 @@ class MinimaxBeamAgent(AgentBase):
 
         # Generate all legal moves (empty cells).
         legal_moves = self._generate_legal_moves(board)
+
+        # Heuristic: We play on roughly half the remaining empty spots
+        turns_remaining = max(1, len(legal_moves) / 2)
+        
+        # Allocate time: Bank / (Turns + Safety Buffer)
+        # Safety buffer (e.g., 5) ensures we never burn 100% of our time on the last anticipated move
+        self._current_move_budget = self._total_time_remaining / (turns_remaining + 5.0)
+        
+        # Cap the budget? (Optional: maybe never spend > 15 seconds on one move)
+        self._current_move_budget = min(self._current_move_budget, 15.0)
+        
+        # Ensure we have at least a tiny sliver of time to return a result
+        self._current_move_budget = max(0.1, self._current_move_budget)
+
+        logger.info(f"Time Bank: {self._total_time_remaining:.1f}s | Moves Left: ~{turns_remaining:.1f} | Budget: {self._current_move_budget:.2f}s")
 
         # Handle pie rule: if we are Player 2 (turn == 2) and the opponent
         # has just played their first move, decide whether to swap.
@@ -135,6 +152,9 @@ class MinimaxBeamAgent(AgentBase):
                 f"best_move=({best_move.x},{best_move.y})"
             )
 
+        elapsed = time.perf_counter() - self._start_time
+        self._total_time_remaining -= elapsed
+
         return best_move
 
     def _should_swap(self, board: Board, opp_move: Move) -> bool:
@@ -175,6 +195,29 @@ class MinimaxBeamAgent(AgentBase):
         # Intermediate distance: future improvement could simulate both scenarios.
         return False
 
+    def _get_dynamic_beam_width(self) -> int:
+            """
+            Augmentation: Dynamically adjust beam width based on remaining time.
+            Rationale: Avoids timeouts by narrowing the search as the clock ticks down.
+            """
+            if self._beam_width <= 0:
+                return 0  # Beam search disabled
+
+            elapsed = time.perf_counter() - self._start_time
+            remaining_ratio = 1.0 - (elapsed / self._current_move_budget)
+
+            # 1. Plenty of time? Wide search.
+            if remaining_ratio > 0.5:
+                return self._beam_width
+            
+            # 2. Less than half time? Focus on top candidates only.
+            elif remaining_ratio > 0.25:
+                return max(1, self._beam_width // 2)
+            
+            # 3. Panic mode? Tunnel vision to finish the depth.
+            else:
+                return 1
+
     # ------------------------------------------------------------------
     # Root search for our colour
     # ------------------------------------------------------------------
@@ -205,8 +248,12 @@ class MinimaxBeamAgent(AgentBase):
         ordered_moves = self._order_moves(board, legal_moves, self.colour)
 
         # Beam search: restrict to top `beam_width` moves if applicable.
-        if self._beam_width > 0 and len(ordered_moves) > self._beam_width:
-            ordered_moves = ordered_moves[: self._beam_width]
+        # if self._beam_width > 0 and len(ordered_moves) > self._beam_width:
+        #    ordered_moves = ordered_moves[: self._beam_width]
+
+        current_k = self._get_dynamic_beam_width()
+        if current_k > 0 and len(ordered_moves) > current_k:
+            ordered_moves = ordered_moves[: current_k]
 
         best_val = -inf
         best_move: Move | None = None
@@ -404,8 +451,12 @@ class MinimaxBeamAgent(AgentBase):
         ordered_moves = self._order_moves(board, legal_moves, player_to_move)
 
         # Beam search: only keep the top `beam_width` moves.
-        if self._beam_width > 0 and len(ordered_moves) > self._beam_width:
-            ordered_moves = ordered_moves[: self._beam_width]
+        # if self._beam_width > 0 and len(ordered_moves) > self._beam_width:
+        #    ordered_moves = ordered_moves[: self._beam_width]
+
+        current_k = self._get_dynamic_beam_width()
+        if current_k > 0 and len(ordered_moves) > current_k:
+            ordered_moves = ordered_moves[: current_k]
 
         # MAX node: our turn
         if player_to_move == self.colour:
@@ -771,6 +822,6 @@ class MinimaxBeamAgent(AgentBase):
         Returns
         -------
         bool
-            True if elapsed time >= `_time_limit`, False otherwise.
+            True if elapsed time >= `_current_move_budget`, False otherwise.
         """
-        return (time.perf_counter() - self._start_time) >= self._time_limit
+        return (time.perf_counter() - self._start_time) >= self._current_move_budget

@@ -1,0 +1,65 @@
+Running 50 games:
+  P1: RL = agents.Group21.MinimaxBeamAgentRL MinimaxBeamAgentRL
+  P2: MB = agents.Group22.MinimaxBeamAgent MinimaxBeamAgent
+  Alt colours: True
+  Board size: 11
+  Logs in: logs_batch_2025_12_06_22_13_17
+
+Game 001: MB wins
+Game 002: MB wins
+Game 003: MB wins
+Game 004: MB wins
+Game 005: MB wins
+Game 006: MB wins
+Game 007: MB wins
+Game 008: MB wins
+Game 009: MB wins
+Game 010: MB wins
+Game 011: MB wins
+Game 012: MB wins
+Game 013: MB wins
+Game 014: MB wins
+Game 015: MB wins
+Game 016: MB wins
+Game 017: MB wins
+Game 018: MB wins
+Game 019: MB wins
+Game 020: MB wins
+Game 021: MB wins
+Game 022: MB wins
+Game 023: MB wins
+Game 024: MB wins
+Game 025: MB wins
+Game 026: MB wins
+Game 027: MB wins
+Game 028: MB wins
+Game 029: MB wins
+Game 030: MB wins
+Game 031: MB wins
+Game 032: MB wins
+Game 033: MB wins
+Game 034: MB wins
+Game 035: MB wins
+Game 036: MB wins
+Game 037: MB wins
+Game 038: MB wins
+Game 039: MB wins
+Game 040: MB wins
+Game 041: MB wins
+Game 042: MB wins
+Game 043: MB wins
+Game 044: MB wins
+Game 045: MB wins
+Game 046: MB wins
+Game 047: MB wins
+Game 048: MB wins
+Game 049: MB wins
+Game 050: MB wins
+
+====== BATCH EXPERIMENT SUMMARY ======
+Total games:   50
+RL wins: 0
+MB wins: 50
+Unknown:       0
+RL win rate: 0.000
+MB win rate: 1.000

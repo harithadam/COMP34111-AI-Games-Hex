@@ -75,9 +75,9 @@ class MinimaxBeamAgentRL(AgentBase):
         self._epsilon = epsilon
 
         # Initial heuristic weights
-        self._w_conn_base = 8.0 # connection-distance weight
-        self._w_mat_base = 1.0 # material (stone count) weight
-        self._w_struct_base = 3.0 # connectivity / bridges weight
+        self._w_conn_base = 10.0 # connection-distance weight
+        self._w_mat_base = 2.6774080590500517 # material (stone count) weight
+        self._w_struct_base = 2.451908244781335 # connectivity / bridges weight
 
         # Learned deltas
         self._delta_conn = 0.0

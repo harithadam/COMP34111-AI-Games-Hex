@@ -16,5 +16,5 @@ Total games:         10
 MinimaxBeam1 wins:  5
 MinimaxBeam2 wins:    5
 Unknown results:     0
-MinimaxBeamRL win rate: 0.500
-MinimaxBeam win rate:   0.500
+MinimaxBeam1 win rate: 0.500
+MinimaxBeam2 win rate:   0.500
