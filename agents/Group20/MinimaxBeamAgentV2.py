@@ -25,7 +25,7 @@ class MinimaxBeamAgentV2(AgentBase):
         max_depth: int = 3,
         beam_width: int = 12,
         time_limit_seconds: float = 1.5,
-        w_conn: float = 8.0,      # Connection distance - MOST IMPORTANT
+        w_conn: float = 12.0,      # Connection distance - MOST IMPORTANT
         w_bridge: float = 5.0,    # Two-bridge patterns
         w_template: float = 6.0,  # Winning templates
     ):
