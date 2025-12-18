@@ -22,7 +22,7 @@ class MinimaxBeamAgentV2(AgentBase):
     def __init__(
         self,
         colour: Colour,
-        max_depth: int = 3,
+        max_depth: int = 5,
         beam_width: int = 12,
         time_limit_seconds: float = 1.5,
         w_conn: float = 12.0,      # Connection distance - MOST IMPORTANT
